@@ -17,5 +17,3 @@ export const path = {
   parse: (path: string): ParsedPath => pathBrowserify.parse(path),
   format: (pathObject: ParsedPath): string => pathBrowserify.format(pathObject),
 } as const;
-
-export const join = () => {};

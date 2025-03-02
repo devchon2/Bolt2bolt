@@ -1,12 +1,60 @@
-// import rehypeRaw from 'rehype-raw'; // Commented out because the module is missing
-// import remarkGfm from 'remark-gfm'; // Commented out because the module is missing
-// import type { PluggableList, Plugin } from 'unified'; // Commented out because the module is missing
-// import rehypeSanitize, { defaultSchema, type Options as RehypeSanitizeOptions } from 'rehype-sanitize'; // Commented out because the module is missing
-// import { SKIP, visit } from 'unist-util-visit'; // Commented out because the module is missing
-// import type { UnistNode, UnistParent } from 'node_modules/unist-util-visit/lib'; // Commented out because the module is missing
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import type { PluggableList, Plugin } from 'unified';
+import rehypeSanitize, { defaultSchema, type Options as RehypeSanitizeOptions } from 'rehype-sanitize';
+import { SKIP, visit } from 'unist-util-visit';
+import type { UnistNode, UnistParent } from 'node_modules/unist-util-visit/lib';
 
 export const allowedHTMLElements = [
-  'b', 'i', 'em', 'strong', 'a', 'code', 'pre', 'blockquote', 'ul', 'ol', 'li', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
+  'a',
+  'b',
+  'blockquote',
+  'br',
+  'code',
+  'dd',
+  'del',
+  'details',
+  'div',
+  'dl',
+  'dt',
+  'em',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'hr',
+  'i',
+  'ins',
+  'kbd',
+  'li',
+  'ol',
+  'p',
+  'pre',
+  'q',
+  'rp',
+  'rt',
+  'ruby',
+  's',
+  'samp',
+  'source',
+  'span',
+  'strike',
+  'strong',
+  'sub',
+  'summary',
+  'sup',
+  'table',
+  'tbody',
+  'td',
+  'tfoot',
+  'th',
+  'thead',
+  'tr',
+  'ul',
+  'var',
+  'think',
 ];
 
 // Add custom rehype plugin
@@ -28,16 +76,24 @@ function remarkThinkRawContent() {
   };
 }
 
-// Temporary replacements for missing imports
-const rehypeSanitizeOptions = {};
-const remarkGfm = {};
-const rehypeRaw = {};
-const rehypeSanitize = {};
-const SKIP = {};
-const visit = (tree: any, visitor: any) => {};
+const rehypeSanitizeOptions: RehypeSanitizeOptions = {
+  ...defaultSchema,
+  tagNames: allowedHTMLElements,
+  attributes: {
+    ...defaultSchema.attributes,
+    div: [
+      ...(defaultSchema.attributes?.div ?? []),
+      'data*',
+      ['className', '__boltArtifact__', '__boltThought__'],
+
+      // ['className', '__boltThought__']
+    ],
+  },
+  strip: [],
+};
 
 export function remarkPlugins(limitedMarkdown: boolean) {
-  const plugins: any[] = [remarkGfm];
+  const plugins: PluggableList = [remarkGfm];
 
   if (limitedMarkdown) {
     plugins.unshift(limitedMarkdownPlugin);
@@ -49,7 +105,7 @@ export function remarkPlugins(limitedMarkdown: boolean) {
 }
 
 export function rehypePlugins(html: boolean) {
-  const plugins: any[] = [];
+  const plugins: PluggableList = [];
 
   if (html) {
     plugins.push(rehypeRaw, [rehypeSanitize, rehypeSanitizeOptions]);
@@ -58,11 +114,11 @@ export function rehypePlugins(html: boolean) {
   return plugins;
 }
 
-const limitedMarkdownPlugin = () => {
-  return (tree: any, file: any) => {
+const limitedMarkdownPlugin: Plugin = () => {
+  return (tree, file) => {
     const contents = file.toString();
 
-    visit(tree, (node: any, index: any, parent: any) => {
+    visit(tree, (node: UnistNode, index, parent: UnistParent) => {
       if (
         index == null ||
         ['paragraph', 'text', 'inlineCode', 'code', 'strong', 'emphasis'].includes(node.type) ||

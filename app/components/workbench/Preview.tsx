@@ -1,7 +1,7 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { IconButton } from '../../ui/IconButton';
-import { workbenchStore } from '../../../lib/stores/workbench';
+import { IconButton } from '~/components/ui/IconButton';
+import { workbenchStore } from '~/lib/stores/workbench';
 import { PortDropdown } from './PortDropdown';
 import { ScreenshotSelector } from './ScreenshotSelector';
 
@@ -105,7 +105,7 @@ export const Preview = memo(() => {
 
   const reloadPreview = () => {
     if (iframeRef.current) {
-      ;
+      iframeRef.current.src = iframeRef.current.src;
     }
   };
 

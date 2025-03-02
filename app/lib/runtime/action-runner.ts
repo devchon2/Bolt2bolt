@@ -305,5 +305,3 @@ export class ActionRunner {
     this.actions.setKey(id, { ...actions[id], ...newState });
   }
 }
-
-export const run = () => {};
