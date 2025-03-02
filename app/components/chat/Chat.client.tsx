@@ -21,9 +21,9 @@ import { debounce } from '~/utils/debounce';
 import { useSettings } from '~/lib/hooks/useSettings';
 import type { ProviderInfo } from '~/types/model';
 import { useSearchParams } from '@remix-run/react';
-import { createSampler } from '~/utils/sampler';
 import { getTemplates, selectStarterTemplate } from '~/utils/selectStarterTemplate';
 import { logStore } from '~/lib/stores/logs';
+import React from 'react';
 
 const toastAnimation = cssTransition({
   enter: 'animated fadeInRight',
@@ -83,6 +83,28 @@ export function Chat() {
   );
 }
 
+type SamplerCallback<T> = (params: T) => void;
+
+export function createSampler<T>(callback: SamplerCallback<T>, delay: number) {
+  let timeout: NodeJS.Timeout | null = null;
+  let lastParams: T | null = null;
+
+  return (params: T) => {
+    lastParams = params;
+
+    if (timeout) {
+      return;
+    }
+
+    timeout = setTimeout(() => {
+      if (lastParams) {
+        callback(lastParams);
+      }
+      timeout = null;
+    }, delay);
+  };
+}
+
 const processSampledMessages = createSampler(
   (options: {
     messages: Message[];
@@ -113,7 +135,7 @@ export const ChatImpl = memo(
   ({ description, initialMessages, storeMessageHistory, importChat, exportChat }: ChatProps) => {
     useShortcuts();
 
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null as unknown as HTMLTextAreaElement);
     const [chatStarted, setChatStarted] = useState(initialMessages.length > 0);
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
     const [imageDataList, setImageDataList] = useState<string[]>([]);
@@ -168,11 +190,11 @@ export const ChatImpl = memo(
           error: e.message,
         });
         toast.error(
-          'There was an error processing your request: ' + (e.message ? e.message : 'No details were returned'),
+          'There was an error processing your request: ' + (e.message ?? 'No details were returned'),
         );
       },
       onFinish: (message, response) => {
-        const usage = response.usage;
+        const {usage} = response;
         setData(undefined);
 
         if (usage) {
@@ -258,7 +280,7 @@ export const ChatImpl = memo(
       if (textarea) {
         textarea.style.height = 'auto';
 
-        const scrollHeight = textarea.scrollHeight;
+        const {scrollHeight} = textarea;
 
         textarea.style.height = `${Math.min(scrollHeight, TEXTAREA_MAX_HEIGHT)}px`;
         textarea.style.overflowY = scrollHeight > TEXTAREA_MAX_HEIGHT ? 'auto' : 'hidden';

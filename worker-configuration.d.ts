@@ -18,4 +18,6 @@ interface Env {
   XAI_API_KEY: string;
   PERPLEXITY_API_KEY: string;
   AWS_BEDROCK_CONFIG: string;
+  NEW_API_KEY_1: string;
+  NEW_API_KEY_2: string;
 }

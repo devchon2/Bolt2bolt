@@ -22,11 +22,6 @@ theme:
     - content.tabs.link
     - content.code.annotation
     - content.code.copy
-    # - navigation.instant
-    # - navigation.tracking
-    # - navigation.tabs.sticky
-    # - navigation.expand
-    # - content.code.annotate
   icon:
     repo: fontawesome/brands/github
   # logo: assets/logo.png
